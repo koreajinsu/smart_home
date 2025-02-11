@@ -1,15 +1,14 @@
-from modules.hardware import initialize_gpio, cleanup
+import time
+import threading
 from modules.lcd_display import initialize_lcd, update_lcd_static
+from modules.dht_sensor import read_dht22
 from modules.voice_control import recognize_voice_commands
 from modules.utility import listen_for_key_input
-import threading
-import time
+from modules.hardware import cleanup
 
-# 초기화
-initialize_gpio()
 initialize_lcd()
 
-# 스레드 시작
+# 스레드 실행
 dht_thread = threading.Thread(target=read_dht22, daemon=True)
 dht_thread.start()
 
@@ -19,10 +18,9 @@ voice_thread.start()
 key_thread = threading.Thread(target=listen_for_key_input, daemon=True)
 key_thread.start()
 
-# 메인 루프
 try:
     while True:
-        update_lcd_static()
+        update_lcd_static("Idle", "Off")
         time.sleep(1)
 except KeyboardInterrupt:
     cleanup()
